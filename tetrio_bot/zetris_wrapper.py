@@ -2,15 +2,11 @@
 from __future__ import annotations
 
 import importlib
-from dataclasses import dataclass
-from typing import Iterable, List, Sequence
+from typing import Iterable, List
 
 import numpy as np
 
-
-@dataclass
-class ZetrisDecision:
-    actions: Sequence[str]
+from .decision import Decision
 
 
 class ZetrisAdapter:
@@ -41,7 +37,7 @@ class ZetrisAdapter:
 
         self._policy = load_policy(policy_path)
 
-    def decide(self, board: np.ndarray, queue: Iterable[str], hold: str | None = None) -> ZetrisDecision:
+    def decide(self, board: np.ndarray, queue: Iterable[str], hold: str | None = None) -> Decision:
         # Delegates to the model; the expected API is `policy.plan(board, queue, hold)`
         try:
             actions: List[str] = list(self._policy.plan(board=board, queue=list(queue), hold=hold))
@@ -49,4 +45,4 @@ class ZetrisAdapter:
             raise RuntimeError(
                 "L'objet de politique Zetris ne possède pas la méthode 'plan'. Vérifiez la version installée."
             ) from exc
-        return ZetrisDecision(actions=actions)
+        return Decision(actions=actions)

@@ -11,10 +11,11 @@ from .runner import BotRunner
 
 
 class BotGUI:
-    def __init__(self, *, policy_path: str | None = None):
+    def __init__(self, *, policy_path: str | None = None, engine: str = "zetris"):
         self._settings = load_settings()
         self._policy_path = policy_path
-        self._runner = BotRunner(self._settings, policy_path=policy_path)
+        self._engine = engine
+        self._runner = BotRunner(self._settings, policy_path=policy_path, engine=engine)
         self._running = False
 
         self._root = tk.Tk()
@@ -61,7 +62,11 @@ class BotGUI:
             try:
                 calibrate(self._settings, status_callback=self._status_var.set)
                 save_settings(self._settings)
-                self._runner = BotRunner(self._settings, policy_path=self._policy_path)
+                self._runner = BotRunner(
+                    self._settings,
+                    policy_path=self._policy_path,
+                    engine=self._engine,
+                )
             except Exception as exc:  # pragma: no cover - manual workflow
                 messagebox.showerror("Erreur", str(exc))
 
