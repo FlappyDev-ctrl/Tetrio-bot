@@ -1,0 +1,9 @@
+mss
+numpy
+Pillow
+pyautogui
+pygetwindow
+pynput
+
+# Tkinter is bundled with Python on most platforms, but on some Linux
+# distributions you might have to install the `python3-tk` package.
