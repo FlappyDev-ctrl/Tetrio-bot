@@ -39,6 +39,21 @@ Avant la première utilisation, effectuez la calibration pour apprendre au bot o
 3. Cliquez sur **▶️ Lancer**. Le bot active automatiquement la fenêtre TETR.IO, capture l'écran, reconstruit la grille puis demande à Zetris le meilleur coup à jouer.
 4. Cliquez sur **⏹️ Arrêter** pour reprendre la main.
 
+### Utiliser un moteur d'IA tiers
+
+Le bot supporte désormais plusieurs moteurs de décision. Par défaut il s'appuie sur Zetris, mais vous pouvez brancher un moteur externe (par exemple celui du dépôt [UndoneMajor/tetrio-bot](https://github.com/UndoneMajor/tetrio-bot)) tant qu'il expose une fabrique retournant un objet ou une fonction capable de fournir des actions.
+
+```bash
+python scripts/run_bot.py --engine "mon_module:create_bot"
+```
+
+Le point d'entrée `module:fabrique` doit retourner soit:
+
+- un objet possédant une méthode `decide(board, queue, hold=None)` ou `plan(...)` qui renvoie la liste des actions ;
+- une fonction directement appelable avec les mêmes paramètres.
+
+Dans le cas du dépôt externe, exposez simplement une fabrique (par exemple `create_bot`) puis indiquez son chemin en argument `--engine`. Le paramètre `--policy` reste disponible si le moteur a besoin d'un chemin vers un modèle.
+
 ## Personnalisation
 
 - Le fichier de configuration permet d'ajuster les touches envoyées (`keymap`) ainsi que la cadence (`tick_rate`).

@@ -9,15 +9,16 @@ import numpy as np
 
 from .capture import BoardCapture, PreviewCapture
 from .config import Settings
+from .engines import create_decision_provider
 from .controller import InputController
 from .window import focus_tetrio_window
-from .zetris_wrapper import ZetrisAdapter
 
 
 class BotRunner:
-    def __init__(self, settings: Settings, *, policy_path: str | None = None):
+    def __init__(self, settings: Settings, *, policy_path: str | None = None, engine: str = "zetris"):
         self._settings = settings
         self._policy_path = policy_path
+        self._engine = engine
         self._thread: Optional[threading.Thread] = None
         self._stop_event = threading.Event()
 
@@ -40,11 +41,11 @@ class BotRunner:
         board_capture = BoardCapture(self._settings.board_region)
         preview_capture = PreviewCapture(self._settings.preview_region)
         controller = InputController(self._settings.keymap)
-        zetris = ZetrisAdapter(policy_path=self._policy_path)
+        decision_provider = create_decision_provider(self._engine, policy_path=self._policy_path)
 
         while not self._stop_event.is_set():
             board_state = board_capture.capture_board()
             queue = preview_capture.capture_queue(max_pieces=5)
-            decision = zetris.decide(board_state.grid.astype(np.float32), queue, hold=None)
+            decision = decision_provider.decide(board_state.grid.astype(np.float32), queue, hold=None)
             controller.execute_actions(decision.actions)
             time.sleep(self._settings.tick_rate)
